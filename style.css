@@ -28,13 +28,12 @@ nav a {
     text-decoration: none;
     font-weight: 500;
     transition: 0.3s;
-    background-color: gray;
     padding: 5px 10px;
 }
 
 nav a:hover {
-  color: #3498db;
-  background-color: blue;
+    color: #3498db;
+    transform: scale(1.02);
 }
 
 .filter {
@@ -68,7 +67,7 @@ nav a:hover {
     border-radius: 8.5px;
     border: 1px solid #ccc;
     cursor: pointer;
-    transition: 0.3s;
+    transition: 0.3s ease;
 }
 
 .btn:hover, .nominal button:hover, .payment button:hover {
@@ -155,10 +154,38 @@ nav a:hover {
     border-radius: 10px;
 }
 
+.form h2 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
 .form {
-    padding: 20px;
-    margin: 10px;
-    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+}
+
+.form form {
+    width: 100%;
+    max-width: 400px;   /* bikin rapi */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+input[type="file"] {
+    padding: 8px;
+    border: 1px dashed #aaa;
+    border-radius: 8px;
+    background: #f9f9f9;
 }
 
 .login {
@@ -209,11 +236,6 @@ nav a:hover {
     text-decoration: underline;
 }
 
-.payment {
-    display: flex;
-    gap: 10px;
-}
-
 button {
     margin-top: 8.5px;
 }
@@ -229,21 +251,21 @@ div a {
     border-radius: 6.5px;
 }
 
-input {
-    border: 1px solid #ddd;
-    border-radius: 6.5px;
-    padding: 8px;
-    width: 235px;
-    margin: 3.5px;
-}
-
-.login input {
-    width: 100%;
-    margin: 3.5px 0;
-}
-
-.nominal {
+.nominal, .payment {
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
+    justify-content: center;
 }
 
+.click {
+    cursor: pointer;
+    display: inline-block;
+    color: #3498db;
+    transition: 0.3s ease;
+}
+
+.click:hover {
+    color: #226490;
+    transform: scale(1.02);
+}
