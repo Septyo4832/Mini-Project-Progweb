@@ -9,17 +9,29 @@ header {
     display: flex;
     justify-content: center;
     background-image: linear-gradient(rgba(0, 133, 227, 0.217), rgba(0, 133, 227, 0.217)),
-    url('bencana.jpeg');
+    url('aset/bencana.jpeg');
     align-items: center;
     background-size: cover;
     background-position: center;
     height: 200px;  
 }
 
+header h1 {
+    font-size: 32px;
+    font-weight: bold;
+    color: white;
+}
+
 nav a {
-    color: black;
+    color: white;
     margin-left: 10px;
     text-decoration: none;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+nav a:hover {
+  color: #3498db;
 }
 
 .filter {
@@ -44,18 +56,32 @@ nav a {
     width: 100%;
 }
 
-.btn {
+.btn, .nominal button {
     display: inline-block;
     background: #3498db;
     color: white;
     padding: 5px 10px;
     text-decoration: none;
+    border-radius: 8.5px;
+    border: 1px solid #ccc;
+    cursor: pointer;
 }
 
-.detail {
+.container {
     display: flex;
     gap: 20px;
-    padding: 20px;
+    margin: 15px;
+}
+
+.container img {
+    width: 400px;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.text {
+    flex: 1;
 }
 
 .progress {
@@ -67,10 +93,13 @@ nav a {
 .progress-bar {
     background: #3498DB;
     height: 100%;
+    width: 50%;
 }
 
 .form, .login {
     padding: 20px;
+    margin: 10px;
+    gap: 10px;
 }
 
 footer {
@@ -89,4 +118,11 @@ input {
     border-radius: 6.5px;
     padding: 8px;
     width: 235px;
+    margin: 3.5px;
 }
+
+.nominal {
+    display: flex;
+    gap: 10px;
+}
+
