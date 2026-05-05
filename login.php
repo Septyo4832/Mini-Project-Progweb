@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>DonasiKita</h1>
+        <nav>
+            <a href="index.html">🏠︎ Home</a>
+            <a href="login.html">➜] Login</a>
+        </nav>
+    </header>
+    <section class="login">
+        <h2>Login</h2>
+        <form>
+            <input type="text" placeholder="Email"><br>
+            <input type="password" placeholder="Password"><br>
+            <button type="submit" class="btn">Login</button>
+            <p class="click"><u>Buat akun baru</u></p>
+        </form>
+    </section>
+</body>
+</html>

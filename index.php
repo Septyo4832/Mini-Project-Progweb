@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Crowdfunding Sosial</title>
+</head>
+<body>
+    <header>
+        <h1>DonasiKita</h1>
+        <nav>
+            <a href="index.html">🏠︎ Home</a>
+            <a href="login.html">➜] Login</a>
+        </nav>
+    </header>
+
+    <section class="filter">
+        <h2>Bantu Sesama, Mulai Dari Sini</h2>
+        <input type="text" placeholder="Cari kampanye...">
+    </section>
+
+    <section class="campaigns">
+        <div class="card">
+            <img src="aset/bencana.jpeg" alt="">
+            <h3>Bantu Korban Banjir</h3>
+            <p>Target: Rp 10.000.000</p>
+            <p>Terkumpul: Rp 5.000.000</p>
+            <a href="detail.html" class="btn">Lihat Detail</a>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2026 DonasiKita</p>
+    </footer>
+</body>
+</html>
