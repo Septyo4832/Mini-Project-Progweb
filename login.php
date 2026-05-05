@@ -1,3 +1,7 @@
+<?php
+include 'koneksi.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,8 +14,8 @@
     <header>
         <h1>DonasiKita</h1>
         <nav>
-            <a href="index.html">🏠︎ Home</a>
-            <a href="login.html">➜] Login</a>
+            <a href="index.php">🏠︎ Home</a>
+            <a href="login.php">➜] Login</a>
         </nav>
     </header>
     <section class="login">
