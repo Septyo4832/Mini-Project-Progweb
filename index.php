@@ -1,3 +1,16 @@
+<?php
+include "koneksi.php";
+
+$query = "SELECT kampanye.*, users.nama AS nama_pengelola
+          FROM kampanye
+          JOIN users ON kampanye.id_pengelola = users.id_user
+          WHERE deadline >= CURDATE()
+          ORDER BY deadline ASC, dana_terkumpul ASC";
+
+$result = mysqli_query($conn, $query);
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,8 +23,8 @@
     <header>
         <h1>DonasiKita</h1>
         <nav>
-            <a href="index.html">🏠︎ Home</a>
-            <a href="login.html">➜] Login</a>
+            <a href="index.php">🏠︎ Home</a>
+            <a href="login.php">➜] Login</a>
         </nav>
     </header>
 
@@ -21,13 +34,19 @@
     </section>
 
     <section class="campaigns">
+        <?php while ($row = mysqli_fetch_assoc($result)) { ?>
         <div class="card">
-            <img src="aset/bencana.jpeg" alt="">
-            <h3>Bantu Korban Banjir</h3>
-            <p>Target: Rp 10.000.000</p>
-            <p>Terkumpul: Rp 5.000.000</p>
-            <a href="detail.html" class="btn">Lihat Detail</a>
-        </div>
+            <img src="<?= $row['gambar']; ?>" alt="poster kampanye">
+
+            <h3><?= $row['judul']; ?></h3>
+            <p>Kategori: <?= $row['kategori']; ?></p>
+            <p>Penyelenggara: <?= $row['nama_pengelola']; ?></p>
+            <p>Target: Rp <?= number_format($row['target_dana'], 0, ',', '.'); ?></p>
+            <p>Terkumpul: Rp <?= number_format($row['dana_terkumpul'], 0, ',', '.'); ?></p>
+            <p>Deadline: <?= $row['deadline']; ?></p>
+            <a href="detail.php?id=<?= $row['id_kampanye']; ?>" class="btn"> Lihat Detail </a>
+            </div>  
+        <?php } ?> 
     </section>
 
     <footer>

@@ -15,11 +15,11 @@ VALUES
 
 (3, 'Bantu Pendidikan Anak Desa', 'Pendidikan', 'Gunungkidul',
 'Kampanye ini bertujuan membantu anak-anak desa mendapatkan perlengkapan sekolah seperti buku, tas, dan seragam.',
-15000000, 4000000, '2026-07-15', 'aset/pendidikan.jpg', 'BCA 987654321 a.n Yayasan Peduli Sesama'),
+15000000, 4000000, '2026-07-15', 'aset/pendidikan1.png', 'BCA 987654321 a.n Yayasan Peduli Sesama'),
 
 (4, 'Gerakan Bersih Sungai', 'Lingkungan', 'Bantul',
 'Kegiatan sosial untuk membersihkan sungai dan menyediakan tempat sampah bagi masyarakat sekitar.',
-8000000, 1000000, '2026-05-25', 'aset/lingkungan.jpg', 'Mandiri 1122334455 a.n Komunitas Hijau');
+8000000, 1000000, '2026-05-25', 'aset/bersih_sungai.jpg', 'Mandiri 1122334455 a.n Komunitas Hijau');
 
 INSERT INTO donasi
 (id_user, id_kampanye, nominal, metode_pembayaran, pesan, bukti_transfer, status)
