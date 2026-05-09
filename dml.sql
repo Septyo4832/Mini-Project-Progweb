@@ -1,11 +1,3 @@
-INSERT INTO users 
-(nama, email, no_telp, alamat, password, role)
-VALUES
-('Budi Santoso', 'budi@gmail.com', '081234567890', 'Yogyakarta', '12345', 'donatur'),
-('Siti Aminah', 'siti@gmail.com', '082233445566', 'Sleman', '12345', 'donatur'),
-('Yayasan Peduli Sesama', 'yayasan@gmail.com', '081122334455', 'Jl. Kaliurang, Yogyakarta', '12345', 'pengelola'),
-('Komunitas Hijau', 'hijau@gmail.com', '087788990011', 'Bantul', '12345', 'pengelola');
-
 INSERT INTO kampanye
 (id_pengelola, judul, kategori, lokasi, deskripsi, target_dana, dana_terkumpul, deadline, gambar, rekening)
 VALUES

@@ -200,6 +200,7 @@ input[type="file"] {
 .login h2 {
     margin-bottom: 20px;
     text-align: center;
+    color: #111;
 }
 
 .login form {
@@ -215,11 +216,21 @@ input[type="file"] {
     width: 100%;
     max-width: 360px;
     margin: 2px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
 }
 
 .login button {
     width: 100%;
     max-width: 360px;
+
+    background: #3498db;
+    color: white;
+    border: 1px solid #3498db;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s ease;
 }
 
 .login p {
@@ -234,10 +245,6 @@ input[type="file"] {
 
 .btn-link:hover {
     text-decoration: underline;
-}
-
-button {
-    margin-top: 8.5px;
 }
 
 footer {
