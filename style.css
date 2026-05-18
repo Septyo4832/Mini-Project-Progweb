@@ -1,30 +1,61 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
+:root {
+    --bg: #f5f7fb;
+    --surface: #ffffff;
+    --surface-soft: #eef7f6;
+    --text: #172033;
+    --muted: #637083;
+    --line: #dce3ec;
+    --primary: #0f766e;
+    --primary-dark: #115e59;
+    --accent: #f97316;
+    --danger: #b42318;
+    --success: #147d45;
+    --shadow: 0 18px 45px rgba(23, 32, 51, 0.12);
 }
 
-header {
-    color: black;
-    padding: 10px;
-    display: flex;
-    justify-content: center;
-    background-image: linear-gradient(rgba(0, 133, 227, 0.217), rgba(0, 133, 227, 0.217)),
-    url('aset/bencana.jpeg');
-    align-items: center;
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+a {
+    color: inherit;
+}
+
+.site-header {
+    position: relative;
+    color: #ffffff;
+    background:
+        linear-gradient(rgba(15, 34, 46, 0.74), rgba(15, 34, 46, 0.58)),
+        url('aset/bencana.jpeg');
     background-size: cover;
     background-position: center;
-    height: 200px;  
 }
 
-header h1 {
-    font-size: 32px;
-    font-weight: bold;
-    color: white;
+.home-header {
+    min-height: 390px;
+    display: flex;
+    flex-direction: column;
 }
 
-nav a {
-    color: white;
+.compact-header {
+    min-height: 112px;
+}
+
+.compact-header .header-inner {
+    justify-content: flex-start;
+}
+
+.compact-header .main-nav {
     margin-left: 10px;
+<<<<<<< Updated upstream
     text-decoration: none;
     font-weight: 500;
     transition: 0.3s;
@@ -35,19 +66,174 @@ nav a {
 nav a:hover {
   color: #3498db;
   background-color: blue;
+=======
+}
+
+.header-inner {
+    width: min(1120px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 22px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.brand {
+    font-size: 26px;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.main-nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.main-nav a,
+.nav-user {
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 14px;
+    border-radius: 8px;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 700;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.main-nav a:hover,
+.main-nav a.active {
+    background: #ffffff;
+    color: var(--primary-dark);
+}
+
+.nav-user {
+    background: rgba(15, 118, 110, 0.72);
+}
+
+.hero-content {
+    width: min(1120px, calc(100% - 32px));
+    margin: auto auto 48px;
+    max-width: 660px;
+}
+
+.hero-content h1 {
+    margin: 8px 0 12px;
+    font-size: 44px;
+    line-height: 1.1;
+}
+
+.hero-content p {
+    margin: 0;
+    max-width: 620px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 17px;
+}
+
+.eyebrow {
+    margin: 0 0 8px;
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.hero-content .eyebrow {
+    color: #fed7aa;
+}
+
+main {
+    width: min(1120px, calc(100% - 32px));
+    margin: 0 auto;
+>>>>>>> Stashed changes
 }
 
 .filter {
-    padding: 40px;
-    text-align: center;
+    margin: -30px auto 28px;
+    padding: 18px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+}
+
+.search-form {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: var(--text);
+    background: #ffffff;
+    font: inherit;
+}
+
+textarea {
+    resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: 3px solid rgba(15, 118, 110, 0.18);
+    border-color: var(--primary);
+}
+
+.btn,
+.quick-amounts button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--primary);
+    background: var(--primary);
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn:hover,
+.quick-amounts button:hover {
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: #ffffff;
+    color: var(--primary-dark);
+}
+
+.btn-small {
+    min-height: 36px;
+    padding: 8px 12px;
 }
 
 .campaigns {
-    display: flex;
-    gap: 20px;
-    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+    padding-bottom: 44px;
 }
 
+<<<<<<< Updated upstream
 .card {
     border: 1px solid #ddd;
     padding: 10px;
@@ -98,11 +284,93 @@ nav a:hover {
     background: #ddd;
     height: 10px;
     margin: 10px 0;
+=======
+.campaign-card,
+.auth-card,
+.form-panel,
+.detail-layout,
+.empty-state {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: 0 12px 30px rgba(23, 32, 51, 0.08);
+}
+
+.campaign-card {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.campaign-card img {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    display: block;
+}
+
+.campaign-body {
+    padding: 18px;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.category {
+    align-self: flex-start;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: var(--surface-soft);
+    color: var(--primary-dark);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.campaign-body h2,
+.detail-content h1,
+.auth-card h1,
+.form-panel h1 {
+    margin: 0;
+    line-height: 1.2;
+}
+
+.campaign-body h2 {
+    font-size: 21px;
+}
+
+.muted {
+    color: var(--muted);
+}
+
+.amount-row,
+.progress-info,
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.amount-row span:first-child,
+.progress-info strong {
+    color: var(--text);
+    font-weight: 800;
+}
+
+.progress-container {
+    width: 100%;
+    height: 10px;
+    background: #e7edf4;
+    border-radius: 999px;
+    overflow: hidden;
+>>>>>>> Stashed changes
 }
 
 .progress-bar {
-    background: #3498DB;
     height: 100%;
+<<<<<<< Updated upstream
     width: 50%;
 }
 
@@ -144,20 +412,175 @@ nav a:hover {
 .login button {
     width: 100%;
     max-width: 360px;
+=======
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: 999px;
 }
 
-.login p {
-    margin-top: 16px;
+.card-footer {
+    margin-top: auto;
+    align-items: center;
 }
 
-.btn-link {
-    color: #3498db;
+.empty-state {
+    grid-column: 1 / -1;
+    padding: 32px;
+    text-align: center;
+}
+
+.detail-page,
+.form-page,
+.auth-page {
+    padding: 42px 0 54px;
+}
+
+.detail-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.9fr);
+    overflow: hidden;
+}
+
+.detail-layout > img {
+    width: 100%;
+    height: 100%;
+    min-height: 430px;
+    object-fit: cover;
+}
+
+.detail-content {
+    padding: 34px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.detail-content h1 {
+    font-size: 32px;
+}
+
+.detail-meta {
+    padding: 16px;
+    border-radius: 8px;
+    background: #f7fafc;
+    border: 1px solid var(--line);
+}
+
+.detail-meta p {
+    margin: 4px 0;
+}
+
+.auth-page,
+.form-page {
+    display: flex;
+    justify-content: center;
+}
+
+.auth-card,
+.form-panel {
+    width: min(520px, 100%);
+    padding: 28px;
+}
+
+.auth-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 4px;
+    margin-bottom: 24px;
+    border-radius: 8px;
+    background: #e9eef5;
+}
+
+.auth-tabs a {
+    padding: 10px;
+    border-radius: 8px;
+    color: var(--muted);
+    text-align: center;
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 800;
 }
 
-.btn-link:hover {
-    text-decoration: underline;
+.auth-tabs a.active {
+    background: #ffffff;
+    color: var(--primary-dark);
+    box-shadow: 0 6px 14px rgba(23, 32, 51, 0.08);
+}
+
+.auth-form,
+.donation-form {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.auth-form label,
+.donation-form label,
+.nominal {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-weight: 800;
+}
+
+.auth-form input,
+.auth-form textarea,
+.donation-form input,
+.donation-form select,
+.donation-form textarea {
+    font-weight: 400;
+}
+
+.auth-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.quick-amounts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.quick-amounts button {
+    background: #ffffff;
+    color: var(--primary-dark);
+}
+
+input[type="file"] {
+    border-style: dashed;
+    background: #fbfcfe;
+}
+
+.alert {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin: 16px 0;
+    border: 1px solid transparent;
+}
+
+.alert p {
+    margin: 0;
+>>>>>>> Stashed changes
+}
+
+.alert.error {
+    background: #fff1f0;
+    border-color: #fecdca;
+    color: var(--danger);
+}
+
+.alert.success {
+    background: #ecfdf3;
+    border-color: #abefc6;
+    color: var(--success);
+}
+
+.page-alert {
+    margin-top: 0;
 }
 
 .payment {
@@ -171,15 +594,26 @@ button {
 
 footer {
     text-align: center;
-    padding: 10px;
-    background: #eee;
+    padding: 22px;
+    background: #172033;
+    color: #ffffff;
 }
 
-div a {
-    border: 1px solid #ddd;
-    border-radius: 6.5px;
+@media (max-width: 900px) {
+    .campaigns {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .detail-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-layout > img {
+        min-height: 280px;
+    }
 }
 
+<<<<<<< Updated upstream
 input {
     border: 1px solid #ddd;
     border-radius: 6.5px;
@@ -198,3 +632,53 @@ input {
     gap: 10px;
 }
 
+=======
+@media (max-width: 640px) {
+    .home-header {
+        min-height: 430px;
+    }
+
+    .header-inner {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .main-nav {
+        justify-content: flex-start;
+    }
+
+    .compact-header .main-nav {
+        margin-left: 0;
+    }
+
+    .hero-content h1 {
+        font-size: 34px;
+    }
+
+    .filter {
+        margin-top: -22px;
+    }
+
+    .search-form,
+    .campaigns,
+    .quick-amounts {
+        grid-template-columns: 1fr;
+    }
+
+    .campaign-card img {
+        aspect-ratio: 4 / 3;
+    }
+
+    .card-footer,
+    .progress-info,
+    .amount-row {
+        flex-direction: column;
+    }
+
+    .auth-card,
+    .form-panel,
+    .detail-content {
+        padding: 22px;
+    }
+}
+>>>>>>> Stashed changes
