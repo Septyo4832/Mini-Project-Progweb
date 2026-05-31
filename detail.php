@@ -13,10 +13,17 @@ function campaignImage($image)
         return 'aset/bencana.jpeg';
     }
 
-    return strpos($image, 'aset/') === 0 ? $image : 'aset/' . $image;
+    $image = trim((string) $image);
+
+    if (strpos($image, 'aset/') === 0 || strpos($image, 'uploads/') === 0) {
+        return $image;
+    }
+
+    return 'aset/' . $image;
 }
 
 $isLoggedIn = isset($_SESSION['id_user']);
+$role = $_SESSION['role'] ?? '';
 $idKampanye = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 
 if ($idKampanye <= 0) {
@@ -42,6 +49,7 @@ if (!$data) {
 $target = (float) $data['target_dana'];
 $terkumpul = (float) $data['dana_terkumpul'];
 $persentase = $target > 0 ? min(100, ($terkumpul / $target) * 100) : 0;
+$isExpired = strtotime($data['deadline']) < strtotime(date('Y-m-d'));
 ?>
 
 <!DOCTYPE html>
@@ -59,6 +67,11 @@ $persentase = $target > 0 ? min(100, ($terkumpul / $target) * 100) : 0;
             <nav class="main-nav" aria-label="Navigasi utama">
                 <a href="index.php">Home</a>
                 <?php if ($isLoggedIn) { ?>
+                    <?php if ($role === 'pengelola') { ?>
+                        <a href="kelola_kampanye.php">Kelola Kampanye</a>
+                    <?php } else { ?>
+                        <a href="riwayat_donasi.php">Riwayat Donasi</a>
+                    <?php } ?>
                     <span class="nav-user">Halo, <?= e($_SESSION['nama'] ?? 'User'); ?></span>
                     <a href="login.php?action=logout">Logout</a>
                 <?php } else { ?>
@@ -97,7 +110,9 @@ $persentase = $target > 0 ? min(100, ($terkumpul / $target) * 100) : 0;
                     <p><strong>Rekening:</strong> <?= e($data['rekening']); ?></p>
                 </div>
 
-                <?php if ($isLoggedIn) { ?>
+                <?php if ($isExpired) { ?>
+                    <span class="btn btn-disabled">Kampanye Berakhir</span>
+                <?php } elseif ($isLoggedIn) { ?>
                     <a href="donasi.php?id=<?= e($data['id_kampanye']); ?>" class="btn">Donasi Sekarang</a>
                 <?php } else { ?>
                     <a

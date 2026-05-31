@@ -13,29 +13,95 @@ function campaignImage($image)
         return 'aset/bencana.jpeg';
     }
 
-    return strpos($image, 'aset/') === 0 ? $image : 'aset/' . $image;
+    $image = trim((string) $image);
+
+    if (strpos($image, 'aset/') === 0 || strpos($image, 'uploads/') === 0) {
+        return $image;
+    }
+
+    return 'aset/' . $image;
+}
+
+function bindStatement($stmt, $types, array &$params)
+{
+    if ($types === '') {
+        return;
+    }
+
+    $refs = [];
+    foreach ($params as $key => $value) {
+        $refs[$key] = &$params[$key];
+    }
+
+    $stmt->bind_param($types, ...$refs);
+}
+
+function pageUrl($page, $keyword, $tanggal)
+{
+    $params = ['page' => $page];
+
+    if ($keyword !== '') {
+        $params['q'] = $keyword;
+    }
+
+    if ($tanggal !== '') {
+        $params['tanggal'] = $tanggal;
+    }
+
+    return 'index.php?' . http_build_query($params);
 }
 
 $isLoggedIn = isset($_SESSION['id_user']);
+$role = $_SESSION['role'] ?? '';
 $keyword = trim($_GET['q'] ?? '');
+$tanggal = trim($_GET['tanggal'] ?? '');
+$tanggal = preg_match('/^\d{4}-\d{2}-\d{2}$/', $tanggal) ? $tanggal : '';
+$page = max(1, (int) ($_GET['page'] ?? 1));
+$perPage = 6;
+
+$conditions = ["kampanye.deadline >= CURDATE()"];
+$types = '';
+$params = [];
+
+if ($keyword !== '') {
+    $conditions[] = "(kampanye.judul LIKE ? OR kampanye.lokasi LIKE ? OR kampanye.kategori LIKE ?)";
+    $likeKeyword = '%' . $keyword . '%';
+    $types .= 'sss';
+    $params[] = $likeKeyword;
+    $params[] = $likeKeyword;
+    $params[] = $likeKeyword;
+}
+
+if ($tanggal !== '') {
+    $conditions[] = "kampanye.deadline = ?";
+    $types .= 's';
+    $params[] = $tanggal;
+}
+
+$whereSql = implode(' AND ', $conditions);
+$countSql = "SELECT COUNT(*) AS total
+             FROM kampanye
+             JOIN users ON kampanye.id_pengelola = users.id_user
+             WHERE $whereSql";
+$countStmt = $conn->prepare($countSql);
+bindStatement($countStmt, $types, $params);
+$countStmt->execute();
+$totalRows = (int) $countStmt->get_result()->fetch_assoc()['total'];
+$totalPages = max(1, (int) ceil($totalRows / $perPage));
+$page = min($page, $totalPages);
+$offset = ($page - 1) * $perPage;
 
 $query = "SELECT kampanye.*, users.nama AS nama_pengelola
           FROM kampanye
           JOIN users ON kampanye.id_pengelola = users.id_user
-          WHERE deadline >= CURDATE()";
-
-if ($keyword !== '') {
-    $query .= " AND (kampanye.judul LIKE ? OR kampanye.kategori LIKE ? OR kampanye.lokasi LIKE ?)";
-}
-
-$query .= " ORDER BY deadline ASC, dana_terkumpul ASC";
+          WHERE $whereSql
+          ORDER BY kampanye.deadline ASC, kampanye.dana_terkumpul ASC
+          LIMIT ? OFFSET ?";
 
 $stmt = $conn->prepare($query);
-
-if ($keyword !== '') {
-    $likeKeyword = '%' . $keyword . '%';
-    $stmt->bind_param("sss", $likeKeyword, $likeKeyword, $likeKeyword);
-}
+$queryTypes = $types . 'ii';
+$queryParams = array_merge($params, [$perPage, $offset]);
+bindStatement($stmt, $queryTypes, $queryParams);
 
 $stmt->execute();
 $result = $stmt->get_result();
@@ -56,6 +122,11 @@ $result = $stmt->get_result();
             <nav class="main-nav" aria-label="Navigasi utama">
                 <a href="index.php" class="active">Home</a>
                 <?php if ($isLoggedIn) { ?>
+                    <?php if ($role === 'pengelola') { ?>
+                        <a href="kelola_kampanye.php">Kelola Kampanye</a>
+                    <?php } else { ?>
+                        <a href="riwayat_donasi.php">Riwayat Donasi</a>
+                    <?php } ?>
                     <span class="nav-user">Halo, <?= e($_SESSION['nama'] ?? 'User'); ?></span>
                     <a href="login.php?action=logout">Logout</a>
                 <?php } else { ?>
@@ -74,9 +145,13 @@ $result = $stmt->get_result();
     <main>
         <section class="filter">
             <form method="GET" class="search-form">
-                <input type="text" name="q" value="<?= e($keyword); ?>" placeholder="Cari kampanye, kategori, atau lokasi">
+                <input type="text" name="q" value="<?= e($keyword); ?>" placeholder="Cari nama kegiatan, lokasi, atau kategori">
+                <input type="date" name="tanggal" value="<?= e($tanggal); ?>" aria-label="Cari berdasarkan tanggal deadline">
                 <button type="submit" class="btn">Cari</button>
             </form>
+            <p class="filter-note">
+                <?= e($totalRows); ?> kampanye aktif ditemukan, diurutkan dari deadline terdekat dan dana terkecil.
+            </p>
         </section>
 
         <section class="campaigns" aria-label="Daftar kampanye">
@@ -116,6 +191,24 @@ $result = $stmt->get_result();
                 </article>
             <?php } ?>
         </section>
+
+        <?php if ($totalPages > 1) { ?>
+            <nav class="pagination" aria-label="Pagination kampanye">
+                <?php if ($page > 1) { ?>
+                    <a href="<?= e(pageUrl($page - 1, $keyword, $tanggal)); ?>">Sebelumnya</a>
+                <?php } ?>
+
+                <?php for ($i = 1; $i <= $totalPages; $i++) { ?>
+                    <a href="<?= e(pageUrl($i, $keyword, $tanggal)); ?>" class="<?= $i === $page ? 'active' : ''; ?>">
+                        <?= e($i); ?>
+                    </a>
+                <?php } ?>
+
+                <?php if ($page < $totalPages) { ?>
+                    <a href="<?= e(pageUrl($page + 1, $keyword, $tanggal)); ?>">Berikutnya</a>
+                <?php } ?>
+            </nav>
+        <?php } ?>
     </main>
 
     <footer>

@@ -23,6 +23,18 @@ function safeRedirect($value)
     return $value;
 }
 
+function passwordMatches($input, $storedHash)
+{
+    $storedHash = (string) $storedHash;
+    $info = password_get_info($storedHash);
+
+    if (($info['algo'] ?? 0) !== 0) {
+        return password_verify($input, $storedHash);
+    }
+
+    return hash_equals($storedHash, (string) $input);
+}
+
 if (($_GET['action'] ?? '') === 'logout') {
     session_unset();
     session_destroy();
@@ -32,6 +44,7 @@ if (($_GET['action'] ?? '') === 'logout') {
 }
 
 $isLoggedIn = isset($_SESSION['id_user']);
+$role = $_SESSION['role'] ?? '';
 $mode = $_GET['mode'] ?? 'login';
 $mode = $mode === 'register' ? 'register' : 'login';
 $redirect = safeRedirect($_POST['redirect'] ?? $_GET['redirect'] ?? 'index.php');
@@ -56,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$isLoggedIn) {
         if ($result->num_rows === 1) {
             $data = $result->fetch_assoc();
 
-            if (password_verify($passwordInput, $data['password'])) {
+            if (passwordMatches($passwordInput, $data['password'])) {
                 $_SESSION['id_user'] = $data['id_user'];
                 $_SESSION['nama'] = $data['nama'];
                 $_SESSION['email'] = $data['email'];
@@ -146,6 +159,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$isLoggedIn) {
             <nav class="main-nav" aria-label="Navigasi utama">
                 <a href="index.php">Home</a>
                 <?php if ($isLoggedIn) { ?>
+                    <?php if ($role === 'pengelola') { ?>
+                        <a href="kelola_kampanye.php">Kelola Kampanye</a>
+                    <?php } else { ?>
+                        <a href="riwayat_donasi.php">Riwayat Donasi</a>
+                    <?php } ?>
                     <span class="nav-user">Halo, <?= e($_SESSION['nama'] ?? 'User'); ?></span>
                     <a href="login.php?action=logout">Logout</a>
                 <?php } else { ?>
@@ -163,6 +181,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$isLoggedIn) {
                 <p class="muted">Kamu sudah login. Tombol login tidak ditampilkan saat session masih aktif.</p>
                 <div class="auth-actions">
                     <a href="index.php" class="btn">Kembali ke Home</a>
+                    <?php if ($role === 'pengelola') { ?>
+                        <a href="kelola_kampanye.php" class="btn btn-secondary">Kelola Kampanye</a>
+                    <?php } else { ?>
+                        <a href="riwayat_donasi.php" class="btn btn-secondary">Riwayat Donasi</a>
+                    <?php } ?>
                     <a href="login.php?action=logout" class="btn btn-secondary">Logout</a>
                 </div>
             <?php } else { ?>

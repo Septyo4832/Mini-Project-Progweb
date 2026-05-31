@@ -8,6 +8,7 @@ function e($value)
 }
 
 $isLoggedIn = isset($_SESSION['id_user']);
+$role = $_SESSION['role'] ?? '';
 $idKampanye = isset($_POST['id_kampanye'])
     ? (int) $_POST['id_kampanye']
     : (int) ($_GET['id'] ?? 0);
@@ -20,28 +21,11 @@ if ($idKampanye <= 0) {
 if (!$isLoggedIn) {
     $redirect = 'donasi.php?id=' . $idKampanye;
     $loginUrl = 'login.php?required=donasi&redirect=' . urlencode($redirect);
-    ?>
-    <!DOCTYPE html>
-    <html lang="id">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Login Diperlukan - Donasi Kita</title>
-        <script>
-            alert('Anda harus login terlebih dahulu untuk melakukan donasi.');
-            window.location.href = '<?= e($loginUrl); ?>';
-        </script>
-    </head>
-    <body>
-        <p>Anda harus login terlebih dahulu untuk melakukan donasi.</p>
-        <p><a href="<?= e($loginUrl); ?>">Login sekarang</a></p>
-    </body>
-    </html>
-    <?php
+    header("Location: " . $loginUrl);
     exit;
 }
 
-$stmtCampaign = $conn->prepare("SELECT id_kampanye, judul, rekening FROM kampanye WHERE id_kampanye = ?");
+$stmtCampaign = $conn->prepare("SELECT id_kampanye, judul, target_dana, dana_terkumpul, rekening FROM kampanye WHERE id_kampanye = ? AND deadline >= CURDATE()");
 $stmtCampaign->bind_param("i", $idKampanye);
 $stmtCampaign->execute();
 $campaign = $stmtCampaign->get_result()->fetch_assoc();
@@ -81,8 +65,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['proses_donasi'])) {
         $errors[] = "Nomor telepon wajib tersimpan pada akun donatur.";
     }
 
-    if ($nominal <= 0) {
-        $errors[] = "Nominal donasi harus lebih dari 0.";
+    if ($nominal < 10000) {
+        $errors[] = "Nominal donasi minimal Rp 10.000.";
     }
 
     if ($metode === '') {
@@ -93,10 +77,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['proses_donasi'])) {
     if (!$errors) {
         if (isset($_FILES['bukti_transfer']) && $_FILES['bukti_transfer']['error'] === UPLOAD_ERR_OK) {
             $ext = strtolower(pathinfo($_FILES['bukti_transfer']['name'], PATHINFO_EXTENSION));
-            $allowedExt = ['jpg', 'jpeg', 'png', 'pdf'];
+            $allowedExt = ['jpg', 'jpeg'];
+            $mimeType = '';
+            if (function_exists('finfo_open')) {
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                $mimeType = finfo_file($finfo, $_FILES['bukti_transfer']['tmp_name']);
+                finfo_close($finfo);
+            }
 
-            if (!in_array($ext, $allowedExt, true)) {
-                $errors[] = "Bukti pembayaran harus berupa JPG, PNG, atau PDF.";
+            if (!in_array($ext, $allowedExt, true) || ($mimeType !== '' && $mimeType !== 'image/jpeg')) {
+                $errors[] = "Bukti pembayaran harus berupa file JPG.";
             } else {
                 $namaFile = "bukti_" . time() . "_" . mt_rand(1000, 9999) . "." . $ext;
 
@@ -104,8 +94,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['proses_donasi'])) {
                     mkdir('uploads', 0777, true);
                 }
 
-                move_uploaded_file($_FILES['bukti_transfer']['tmp_name'], "uploads/" . $namaFile);
-                $namaFile = "uploads/" . $namaFile;
+                if (move_uploaded_file($_FILES['bukti_transfer']['tmp_name'], "uploads/" . $namaFile)) {
+                    $namaFile = "uploads/" . $namaFile;
+                } else {
+                    $errors[] = "Bukti pembayaran gagal disimpan di server.";
+                }
             }
         } else {
             $errors[] = "Bukti pembayaran wajib diunggah.";
@@ -148,6 +141,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['proses_donasi'])) {
             <nav class="main-nav" aria-label="Navigasi utama">
                 <a href="index.php">Home</a>
                 <?php if ($isLoggedIn) { ?>
+                    <?php if ($role === 'pengelola') { ?>
+                        <a href="kelola_kampanye.php">Kelola Kampanye</a>
+                    <?php } else { ?>
+                        <a href="riwayat_donasi.php">Riwayat Donasi</a>
+                    <?php } ?>
                     <span class="nav-user">Halo, <?= e($_SESSION['nama'] ?? 'User'); ?></span>
                     <a href="login.php?action=logout">Logout</a>
                 <?php } else { ?>
@@ -161,6 +159,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['proses_donasi'])) {
         <section class="form-panel">
             <p class="eyebrow">Form donasi</p>
             <h1><?= e($campaign['judul']); ?></h1>
+            <div class="summary-grid donation-summary">
+                <div class="summary-card">
+                    <span>Target</span>
+                    <strong>Rp <?= number_format((float) $campaign['target_dana'], 0, ',', '.'); ?></strong>
+                </div>
+                <div class="summary-card">
+                    <span>Dana terkumpul</span>
+                    <strong>Rp <?= number_format((float) $campaign['dana_terkumpul'], 0, ',', '.'); ?></strong>
+                </div>
+            </div>
             <p class="muted">Rekening tujuan: <?= e($campaign['rekening']); ?></p>
 
             <?php if ($errors) { ?>
@@ -197,7 +205,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['proses_donasi'])) {
                         <button type="button" data-amount="100000">100.000</button>
                         <button type="button" data-amount="1000000">1.000.000</button>
                     </div>
-                    <input type="number" name="nominal_input" id="nominal_input" value="<?= e($_POST['nominal_input'] ?? ''); ?>" placeholder="Masukkan nominal" min="1" required>
+                    <input type="number" name="nominal_input" id="nominal_input" value="<?= e($_POST['nominal_input'] ?? ''); ?>" placeholder="Masukkan nominal" min="10000" required>
                 </div>
 
                 <label>
@@ -216,8 +224,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['proses_donasi'])) {
                 </label>
 
                 <label>
-                    Bukti pembayaran
-                    <input type="file" name="bukti_transfer" accept=".jpg,.jpeg,.png,.pdf" required>
+                    Bukti pembayaran (JPG)
+                    <input type="file" name="bukti_transfer" accept=".jpg,.jpeg,image/jpeg" required>
                 </label>
 
                 <button type="submit" name="proses_donasi" class="btn">Kirim Donasi</button>

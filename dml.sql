@@ -16,6 +16,6 @@ VALUES
 INSERT INTO donasi
 (id_user, id_kampanye, nominal, metode_pembayaran, pesan, bukti_transfer, status)
 VALUES
-(1, 1, 50000, 'Transfer Bank', 'Semoga membantu para korban banjir.', 'upload/bukti1.jpg', 'pending'),
-(2, 1, 100000, 'QRIS', 'Semoga cepat pulih.', 'upload/bukti2.jpg', 'verified'),
-(1, 2, 75000, 'E-Wallet', 'Semangat untuk adik-adik sekolah.', 'upload/bukti3.jpg', 'pending');
+(1, 1, 50000, 'Transfer Bank', 'Semoga membantu para korban banjir.', 'uploads/bukti1.jpg', 'pending'),
+(2, 1, 100000, 'QRIS', 'Semoga cepat pulih.', 'uploads/bukti2.jpg', 'verified'),
+(1, 2, 75000, 'E-Wallet', 'Semangat untuk adik-adik sekolah.', 'uploads/bukti3.jpg', 'pending');
