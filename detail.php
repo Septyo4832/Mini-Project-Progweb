@@ -1,81 +1,113 @@
 <?php
-// 1. Sertakan file koneksi
+session_start();
 require_once 'koneksi.php';
 
-// 2. Ambil ID dari URL (misal: detail.php?id=1)
-// Jika tidak ada ID di URL, dialihkan ke halaman utama
-if (!isset($_GET['id'])) {
+function e($value)
+{
+    return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+}
+
+function campaignImage($image)
+{
+    if (!$image) {
+        return 'aset/bencana.jpeg';
+    }
+
+    return strpos($image, 'aset/') === 0 ? $image : 'aset/' . $image;
+}
+
+$isLoggedIn = isset($_SESSION['id_user']);
+$idKampanye = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+
+if ($idKampanye <= 0) {
     header("Location: index.php");
     exit;
 }
 
-$id_kampanye = $_GET['id'];
-
-// 3. Query ambil data kampanye berdasarkan ID
-$query = "SELECT * FROM kampanye WHERE id_kampanye = ?";
+$query = "SELECT kampanye.*, users.nama AS nama_pengelola
+          FROM kampanye
+          JOIN users ON kampanye.id_pengelola = users.id_user
+          WHERE kampanye.id_kampanye = ?";
 $stmt = $conn->prepare($query);
-$stmt->bind_param("i", $id_kampanye);
+$stmt->bind_param("i", $idKampanye);
 $stmt->execute();
 $result = $stmt->get_result();
 $data = $result->fetch_assoc();
 
-// Jika data tidak ditemukan
 if (!$data) {
-    echo "Kampanye tidak ditemukan.";
+    header("Location: index.php");
     exit;
 }
 
-// 4. Logika perhitungan progress bar
-$target = $data['target_dana'];
-$terkumpul = $data['dana_terkumpul'];
-$persentase = ($terkumpul / $target) * 100;
-
-// Batasi persentase maksimal 100% untuk tampilan bar
-$width_bar = ($persentase > 100) ? 100 : $persentase;
+$target = (float) $data['target_dana'];
+$terkumpul = (float) $data['dana_terkumpul'];
+$persentase = $target > 0 ? min(100, ($terkumpul / $target) * 100) : 0;
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Detail Kampanye - <?php echo $data['judul']; ?></title>
+    <title><?= e($data['judul']); ?> - Donasi Kita</title>
 </head>
 <body>
-    <header>
-        <h1>DonasiKita</h1>
-        <nav>
-            <a href="index.php">🏠︎ Home</a>
-            <a href="login.php">➜] Login</a>
-        </nav>
+    <header class="site-header compact-header">
+        <div class="header-inner">
+            <a href="index.php" class="brand">Donasi Kita</a>
+            <nav class="main-nav" aria-label="Navigasi utama">
+                <a href="index.php">Home</a>
+                <?php if ($isLoggedIn) { ?>
+                    <span class="nav-user">Halo, <?= e($_SESSION['nama'] ?? 'User'); ?></span>
+                    <a href="login.php?action=logout">Logout</a>
+                <?php } else { ?>
+                    <a href="login.php">Login</a>
+                <?php } ?>
+            </nav>
+        </div>
     </header>
-    <section class="detail">
-        <div class="container">
-            <!-- Gambar dinamis dari database -->
-            <img src="aset/<?php echo $data['gambar']; ?>" alt="<?php echo $data['judul']; ?>">
-            
-            <div class="text">
-                <!-- Judul dinamis -->
-                <h2><?php echo $data['judul']; ?></h2>
-                
-                <!-- Deskripsi dinamis -->
-                <p><?php echo nl2br($data['deskripsi']); ?></p>
-                
+
+    <main class="detail-page">
+        <?php if (($_GET['status'] ?? '') === 'donasi-berhasil') { ?>
+            <div class="alert success page-alert">
+                <p>Donasi berhasil dikirim dan menunggu verifikasi.</p>
+            </div>
+        <?php } ?>
+
+        <section class="detail-layout">
+            <img src="<?= e(campaignImage($data['gambar'])); ?>" alt="<?= e($data['judul']); ?>">
+
+            <div class="detail-content">
+                <span class="category"><?= e($data['kategori']); ?></span>
+                <h1><?= e($data['judul']); ?></h1>
+                <p class="muted"><?= e($data['lokasi']); ?> oleh <?= e($data['nama_pengelola']); ?></p>
+                <p><?= nl2br(e($data['deskripsi'])); ?></p>
+
                 <div class="progress-info">
-                    <!-- Format angka ke Rupiah -->
-                    <span>Terkumpul: <strong>Rp <?php echo number_format($terkumpul, 0, ',', '.'); ?></strong></span>
-                    <span>Target: <strong>Rp <?php echo number_format($target, 0, ',', '.'); ?></strong></span>
+                    <span>Terkumpul <strong>Rp <?= number_format($terkumpul, 0, ',', '.'); ?></strong></span>
+                    <span>Target <strong>Rp <?= number_format($target, 0, ',', '.'); ?></strong></span>
                 </div>
-                
                 <div class="progress-container">
-                    <!-- Persentase dinamis pada width inline style -->
-                    <div class="progress-bar" style="width: <?php echo $width_bar; ?>%;"></div> 
+                    <div class="progress-bar" style="width: <?= $persentase; ?>%;"></div>
                 </div>
 
-            <!-- Mengarahkan ke form donasi dengan membawa ID kampanye -->
-            <a href="donasi.php?id=<?php echo $data['id_kampanye']; ?>" class="btn-donasi">Donasi Sekarang</a>
-        </div>
-    </section>
+                <div class="detail-meta">
+                    <p><strong>Deadline:</strong> <?= e(date('d M Y', strtotime($data['deadline']))); ?></p>
+                    <p><strong>Rekening:</strong> <?= e($data['rekening']); ?></p>
+                </div>
+
+                <?php if ($isLoggedIn) { ?>
+                    <a href="donasi.php?id=<?= e($data['id_kampanye']); ?>" class="btn">Donasi Sekarang</a>
+                <?php } else { ?>
+                    <a
+                        href="login.php?required=donasi&redirect=<?= e(urlencode('donasi.php?id=' . $data['id_kampanye'])); ?>"
+                        class="btn"
+                        onclick="alert('Anda harus login terlebih dahulu untuk melakukan donasi.');"
+                    >Donasi Sekarang</a>
+                <?php } ?>
+            </div>
+        </section>
+    </main>
 </body>
 </html>
