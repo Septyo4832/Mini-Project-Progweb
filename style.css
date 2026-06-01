@@ -152,7 +152,7 @@ main {
 }
 
 .filter {
-    margin: -30px auto 28px;
+    margin: 20px 0 50px;
     padding: 18px;
     background: var(--surface);
     border: 1px solid var(--line);
